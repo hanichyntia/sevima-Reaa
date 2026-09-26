@@ -14,7 +14,6 @@ use App\Models\OrangTua;
 
 class AuthController extends Controller
 {
-    // 1. LOGIN: Token HANYA didapatkan di sini
     public function login(Request $request)
     {
         $credentials = $request->validate([
@@ -28,7 +27,6 @@ class AuthController extends Controller
                 ->withErrors(['email' => 'Email atau password salah.']);
         }
 
-        // Redirect sesuai role dan set cookie token
         $user = auth()->user();
         $redirectRoute = match ($user->role) {
             'admin'     => 'admin.dashboard',
@@ -40,10 +38,9 @@ class AuthController extends Controller
 
         return redirect()->route($redirectRoute)
             ->with('success', 'Login berhasil!')
-            ->cookie('cookies_token', $token, 60 * 24); // Token berlaku 1 hari
+            ->cookie('cookies_token', $token, 60 * 24);
     }
 
-    // 2. REGISTER ADMIN (Tanpa Token)
     public function registerAdmin(Request $request)
     {
         $validatedData = $request->validate([
@@ -53,7 +50,6 @@ class AuthController extends Controller
         ]);
 
         DB::transaction(function () use ($validatedData) {
-            // Simpan ke tabel users
             $user = User::create([
                 'name'     => $validatedData['name'],
                 'email'    => $validatedData['email'],
@@ -61,7 +57,6 @@ class AuthController extends Controller
                 'role'     => 'admin',
             ]);
 
-            // Simpan ke tabel admins
             Admin::create([
                 'user_id' => $user->id,
             ]);
@@ -71,7 +66,6 @@ class AuthController extends Controller
             ->with('success', 'Pendaftaran admin berhasil! Silakan login.');
     }
 
-    // 3. REGISTER GURU (Tanpa Token)
     public function registerGuru(Request $request)
     {
         $validatedData = $request->validate([
@@ -83,7 +77,6 @@ class AuthController extends Controller
         ]);
 
         DB::transaction(function () use ($validatedData) {
-            // Simpan ke tabel users
             $user = User::create([
                 'name'     => $validatedData['name'],
                 'email'    => $validatedData['email'],
@@ -91,7 +84,6 @@ class AuthController extends Controller
                 'role'     => 'guru',
             ]);
 
-            // Simpan ke tabel gurus
             Guru::create([
                 'user_id'        => $user->id,
                 'nip'            => $validatedData['nip'],
@@ -103,7 +95,6 @@ class AuthController extends Controller
             ->with('success', 'Pendaftaran guru berhasil! Silakan login.');
     }
 
-    // 4. REGISTER SISWA (Tanpa Token)
     public function registerSiswa(Request $request)
     {
         $validatedData = $request->validate([
@@ -114,7 +105,6 @@ class AuthController extends Controller
         ]);
 
         DB::transaction(function () use ($validatedData) {
-            // Simpan ke tabel users
             $user = User::create([
                 'name'     => $validatedData['name'],
                 'email'    => $validatedData['email'],
@@ -122,7 +112,6 @@ class AuthController extends Controller
                 'role'     => 'siswa',
             ]);
 
-            // Simpan ke tabel siswas
             Siswa::create([
                 'user_id' => $user->id,
                 'nis'     => $validatedData['nis'],
@@ -133,7 +122,6 @@ class AuthController extends Controller
             ->with('success', 'Pendaftaran siswa berhasil! Silakan login.');
     }
 
-    // 5. REGISTER ORANG TUA (Tanpa Token)
     public function registerOrangTua(Request $request)
     {
         $validatedData = $request->validate([
@@ -144,7 +132,6 @@ class AuthController extends Controller
         ]);
 
         DB::transaction(function () use ($validatedData) {
-            // Simpan ke tabel users
             $user = User::create([
                 'name'     => $validatedData['name'],
                 'email'    => $validatedData['email'],
@@ -152,7 +139,6 @@ class AuthController extends Controller
                 'role'     => 'orang_tua',
             ]);
 
-            // Simpan ke tabel orang_tuas
             OrangTua::create([
                 'user_id'  => $user->id,
                 'siswa_id' => $validatedData['siswa_id'],
@@ -163,13 +149,12 @@ class AuthController extends Controller
             ->with('success', 'Pendaftaran orang tua berhasil! Silakan login.');
     }
 
-    // 6. LOGOUT
     public function logout()
     {
         auth()->logout();
 
         return redirect()->route('login')
             ->with('success', 'Berhasil keluar.')
-            ->withoutCookie('cookies_token'); // Menghapus cookie token
+            ->withoutCookie('cookies_token');
     }
 }
