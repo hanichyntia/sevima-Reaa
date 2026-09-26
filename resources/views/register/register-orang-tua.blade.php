@@ -3,13 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register Admin - Reaa</title>
+    <title>Register Orang Tua - Reaa</title>
     
     <!-- CDN Bootstrap 5 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
     <!-- External Custom CSS -->
     <link rel="stylesheet" href="{{ asset('css/style-register.css') }}">
 </head>
@@ -24,11 +23,8 @@
                     <span class="fs-3 fw-bold">Reaa</span>
                 </div>
                 <div class="logo-sub">Study Online. Learn Online</div>
-                
                 <h2 class="banner-heading">Learn From World's<br>Best Instructors<br>Around The World.</h2>
             </div>
-            
-            
         </div>
 
         <!-- Form Kanan -->
@@ -37,9 +33,9 @@
                 <span class="lang-dropdown">English(USA) <i class="fas fa-chevron-down ms-1"></i></span>
             </div>
 
-            <h3 class="form-title">Create Account</h3>
+            <h3 class="form-title">Create Orang Tua Account</h3>
 
-            {{-- Pesan Sukses / Session Alert --}}
+            {{-- Pesan Sukses --}}
             @if (session('success'))
                 <div class="alert alert-success alert-dismissible fade show mb-4" role="alert">
                     {{ session('success') }}
@@ -47,43 +43,57 @@
                 </div>
             @endif
 
-            <form action="{{ route('admin.register.store') }}" method="POST">
+            <form action="{{ route('orangtua.register.store') }}" method="POST">
                 @csrf
 
-                <!-- Nama Lengkap -->
-                <div class="mb-4">
+                <!-- Nama Lengkap Orang Tua -->
+                <div class="mb-3">
                     <input type="text" 
                            class="form-control custom-input @error('name') is-invalid @enderror" 
                            id="name" 
                            name="name" 
                            value="{{ old('name') }}" 
-                           placeholder="Full Name" 
+                           placeholder="Nama Lengkap Orang Tua" 
                            required>
                     @error('name')
-                        <div class="invalid-feedback">
-                            {{ $message }}
-                        </div>
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+
+                <!-- Dropdown Pilih Anak (Siswa) -->
+                <div class="mb-3">
+                    <select class="form-select custom-input @error('siswa_id') is-invalid @enderror" 
+                            id="siswa_id" 
+                            name="siswa_id" 
+                            required>
+                        <option value="" disabled selected>-- Pilih Anak (Siswa) --</option>
+                        @foreach ($siswas as $siswa)
+                            <option value="{{ $siswa->id }}" {{ old('siswa_id') == $siswa->id ? 'selected' : '' }}>
+                                {{ $siswa->user->name ?? 'Siswa ID: '.$siswa->id }} (NIS: {{ $siswa->nis }})
+                            </option>
+                        @endforeach
+                    </select>
+                    @error('siswa_id')
+                        <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
 
                 <!-- Email -->
-                <div class="mb-4">
+                <div class="mb-3">
                     <input type="email" 
                            class="form-control custom-input @error('email') is-invalid @enderror" 
                            id="email" 
                            name="email" 
                            value="{{ old('email') }}" 
-                           placeholder="Email Address" 
+                           placeholder="Alamat Email" 
                            required>
                     @error('email')
-                        <div class="invalid-feedback">
-                            {{ $message }}
-                        </div>
+                        <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
 
                 <!-- Password -->
-                <div class="mb-4 password-container">
+                <div class="mb-3 password-container">
                     <input type="password" 
                            class="form-control custom-input @error('password') is-invalid @enderror" 
                            id="password" 
@@ -92,9 +102,7 @@
                            required>
                     <i class="far fa-eye-slash toggle-password" id="togglePassword"></i>
                     @error('password')
-                        <div class="invalid-feedback d-block">
-                            {{ $message }}
-                        </div>
+                        <div class="invalid-feedback d-block">{{ $message }}</div>
                     @enderror
                 </div>
 
@@ -104,15 +112,15 @@
                            class="form-control custom-input" 
                            id="password_confirmation" 
                            name="password_confirmation" 
-                           placeholder="Confirm Password" 
+                           placeholder="Konfirmasi Password" 
                            required>
                 </div>
 
-                <!-- Checkbox Terms & Policy -->
+                <!-- Checkbox Syarat & Ketentuan -->
                 <div class="mb-4 form-check d-flex align-items-center gap-2 ps-0">
                     <input type="checkbox" class="form-check-input ms-0" id="terms" required checked>
                     <label class="form-check-label terms-text" for="terms">
-                        I agree to the <a href="#">terms of service</a> and <a href="#">privacy policy</a>
+                        Saya menyetujui <a href="#">syarat & ketentuan</a> serta <a href="#">kebijakan privasi</a>
                     </label>
                 </div>
 
@@ -135,7 +143,7 @@
 
             <!-- Login Link -->
             <div class="text-center footer-text">
-                Already Have an account? <a href="#">Sign in</a>
+                Sudah punya akun? <a href="#">Sign in</a>
             </div>
         </div>
     </div>
