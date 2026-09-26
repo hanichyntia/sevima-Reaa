@@ -2,36 +2,29 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Database\Factories\UserFactory;
-use Illuminate\Database\Eloquent\Attributes\Fillable;
-use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Tymon\JWTAuth\Contracts\JWTSubject; // 1. Import Contract JWTSubject
 
-#[Fillable(['name', 'email', 'password'])]
-#[Hidden(['password', 'remember_token'])]
-class User extends Authenticatable
+class User extends Authenticatable implements JWTSubject // 2. Implementasikan JWTSubject
 {
-    /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
-    protected function casts(): array
-    {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-        ];
-    }
+    protected $fillable = [
+        'name',
+        'email',
+        'password',
+        'role',
+    ];
+
+    protected $hidden = [
+        'password',
+        'remember_token',
+    ];
 
     /**
-     * Mengambil identifier yang akan disimpan di klaim JWT.
+     * Mengembalikan ID/Primary Key user untuk dimasukkan ke payload token.
      */
     public function getJWTIdentifier()
     {
@@ -39,10 +32,12 @@ class User extends Authenticatable
     }
 
     /**
-     * Mengembalikan array key value yang berisi custom claims untuk JWT.
+     * Mengembalikan data kustom tambahan yang ingin dimasukkan ke dalam token.
      */
     public function getJWTCustomClaims()
     {
-        return [];
+        return [
+            'role' => $this->role, // Opsional: Memasukkan role ke dalam token JWT
+        ];
     }
 }

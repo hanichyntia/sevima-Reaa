@@ -39,8 +39,7 @@ return [
 
     'guards' => [
         'web' => [
-            'driver' => 'jwtphp artisan make:middleware JwtFromCookie
-',
+            'driver' => 'jwt',
             'provider' => 'users',
         ],
     ],
